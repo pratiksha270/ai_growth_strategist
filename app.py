@@ -1,55 +1,54 @@
 import streamlit as st
 import google.generativeai as genai
-import os
 import json
 
-# Set up page config
-st.set_page_config(page_title="AI Business Growth Strategist", page_icon="🚀", layout="centered")
+# Load credentials from Streamlit Secrets
+genai.configure(credentials=json.loads(st.secrets["GOOGLE_SERVICE_ACCOUNT_JSON"]))
 
-# Set environment variable for credentials
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "geminigrowthapp-230f2d017943.json"
+# Set Streamlit page config
+st.set_page_config(
+    page_title="AI Business Growth Strategist",
+    page_icon="🚀",
+    layout="centered",
+    initial_sidebar_state="collapsed",
+)
 
-# Initialize Gemini
-genai.configure()
-model = genai.GenerativeModel("gemini-pro")
-
-# App UI
+# Title
 st.title("🚀 AI Business Growth Strategist & Problem Solver")
 st.markdown("Diagnose business challenges and generate tailored strategies & content with AI.")
 
-st.subheader("📝 Step 1: Business Information")
+st.markdown("---")
+st.header("📝 Step 1: Business Information")
+
+# Form Inputs
 business_name = st.text_input("Business Name", placeholder="e.g., EcoFashion Co.")
-target_audience = st.text_input("Target Audience", placeholder="e.g., Gen Z women")
 industry = st.text_input("Industry", placeholder="e.g., Fashion, Tech")
+target_audience = st.text_input("Target Audience", placeholder="e.g., Gen Z women")
 business_goal = st.text_input("Business Goal", placeholder="e.g., Improve sales conversion")
-problem_description = st.text_area("Describe the Current Problem", placeholder="e.g., Sales dropped 30% despite marketing efforts.")
+problem = st.text_area("Describe the Current Problem", placeholder="e.g., Sales dropped 30% despite marketing efforts.")
 
+# Submit Button
 if st.button("🧠 Diagnose Problem"):
-    if not all([business_name, target_audience, industry, business_goal, problem_description]):
-        st.warning("Please fill out all fields before proceeding.")
-    else:
-        with st.spinner("🔍 Sending to Gemini..."):
-            try:
-                prompt = f"""
-                I am a business analyst. Here is the company info:
+    with st.spinner("🔍 Sending to Gemini..."):
+        try:
+            model = genai.GenerativeModel("gemini-pro")
+            prompt = f"""
+You are an AI business growth strategist.
 
-                Business Name: {business_name}
-                Target Audience: {target_audience}
-                Industry: {industry}
-                Business Goal: {business_goal}
-                Current Problem: {problem_description}
+Analyze the business context and suggest solutions in three sections:
+1. Diagnosis Summary
+2. Strategic Suggestions
+3. AI-Powered Content Ideas
 
-                Based on the above, generate:
-                1. Root cause analysis of the business problem
-                2. 3 tailored growth strategies
-                3. 2 AI tools that could be used to help
-                4. Suggested campaign ideas with channels (email, Instagram, etc)
-                5. A motivational business insight quote
-                """
-
-                response = model.generate_content(prompt)
-                st.success("✅ Diagnosis Complete!")
-                st.markdown(response.text)
-
-            except Exception as e:
-                st.error(f"❌ Gemini API Error:\n\n{e}")
+Business Name: {business_name}
+Industry: {industry}
+Target Audience: {target_audience}
+Business Goal: {business_goal}
+Problem: {problem}
+"""
+            response = model.generate_content(prompt)
+            st.markdown("---")
+            st.subheader("📊 Diagnosis Result")
+            st.write(response.text)
+        except Exception as e:
+            st.error(f"❌ Gemini API Error:\n\n{e}")
