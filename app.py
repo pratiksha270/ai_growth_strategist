@@ -2,74 +2,45 @@ import streamlit as st
 import openai
 import os
 
+# Config
 st.set_page_config(page_title="AI Business Growth Strategist", layout="centered")
-
-# Load API key securely
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 st.title("🚀 AI Business Growth Strategist & Problem Solver")
 st.caption("Diagnose business challenges and generate tailored strategies & content with AI.")
 st.markdown("---")
 
-# STEP 1: Business Info Form
-with st.form("business_info"):
-    st.subheader("📝 Step 1: Enter Business Information")
+# --- Step 1: Business Information ---
+st.subheader("📝 Step 1: Business Information")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        name = st.text_input("Business Name", placeholder="e.g., EcoFashion Co.")
-        audience = st.text_input("Target Audience", placeholder="e.g., Gen Z women")
-    with col2:
-        industry = st.text_input("Industry", placeholder="e.g., Fashion, Tech")
-        goal = st.text_input("Business Goal", placeholder="e.g., Improve sales conversion")
+col1, col2 = st.columns(2)
+business_name = col1.text_input("Business Name", placeholder="e.g., EcoFashion Co.")
+industry = col2.text_input("Industry", placeholder="e.g., Fashion, Tech")
+target_audience = col1.text_input("Target Audience", placeholder="e.g., Gen Z women")
+business_goal = col2.text_input("Business Goal", placeholder="e.g., Improve sales conversion")
 
-    problem = st.text_area("Describe the Current Problem", placeholder="e.g., Sales dropped 30% despite marketing efforts.")
+problem_description = st.text_area("Describe the Current Problem", placeholder="e.g., Sales dropped 30% despite marketing efforts.")
 
-    submitted = st.form_submit_button("Submit Details")
-
-# Store input to session state
-if submitted:
-    st.session_state.submitted = True
-    st.session_state.inputs = {
-        "name": name,
-        "industry": industry,
-        "audience": audience,
-        "goal": goal,
-        "problem": problem
-    }
-    st.success("✅ Details submitted. Scroll down to analyze the problem.")
-
-# STEP 2: Diagnosis
-if st.session_state.get("submitted"):
-    st.markdown("---")
-    st.subheader("🔍 Step 2: Diagnose the Business Problem")
-
-    if st.button("Diagnose Problem"):
-        with st.spinner("Analyzing business issues using AI..."):
+# Button to trigger AI diagnosis
+if st.button("🔍 Diagnose Problem"):
+    if all([business_name, industry, target_audience, business_goal, problem_description]):
+        with st.spinner("Analyzing problem with AI..."):
             prompt = f"""
-You are an expert business consultant. Analyze the following business context and identify possible causes of the described problem.
-Categorize the causes into:
-- Product Issues
-- Marketing Issues
-- External Factors
+You are a senior business analyst. A client has provided the following context about their company.
 
-Business Name: {name}
+Business Name: {business_name}
 Industry: {industry}
-Target Audience: {audience}
-Business Goal: {goal}
-Problem: {problem}
+Target Audience: {target_audience}
+Business Goal: {business_goal}
+Current Problem: {problem_description}
 
-Present the result as:
+Analyze the business problem and categorize causes under:
+- 📦 Product Issues
+- 📣 Marketing Issues
+- 🌐 External Factors
 
-📦 Product:
-...
-
-📣 Marketing:
-...
-
-🌐 External:
-...
-            """
+Return the diagnosis clearly under these 3 headings.
+"""
             try:
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
@@ -77,8 +48,11 @@ Present the result as:
                     temperature=0.7,
                     max_tokens=500
                 )
-                diagnosis = response['choices'][0]['message']['content']
-                st.markdown("### 💡 Diagnosis")
+                diagnosis = response.choices[0].message.content
+                st.markdown("---")
+                st.subheader("🧠 AI Diagnosis")
                 st.markdown(diagnosis)
             except Exception as e:
-                st.error("❌ Failed to get diagnosis. Check your API key or try again later.")
+                st.error("❌ Error fetching response. Check your API key or try again.")
+    else:
+        st.warning("⚠️ Please fill all fields before diagnosing.")
