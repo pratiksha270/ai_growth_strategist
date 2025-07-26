@@ -3,52 +3,53 @@ import google.generativeai as genai
 import os
 import json
 
-# === Load Gemini Credentials ===
-# Point this to the downloaded JSON key path
-key_path = "geminigrowthapp-230f2d017943.json"  # or st.secrets if on Streamlit Cloud
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = key_path
+# Set up page config
+st.set_page_config(page_title="AI Business Growth Strategist", page_icon="🚀", layout="centered")
 
-# === Configure Gemini ===
+# Set environment variable for credentials
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "geminigrowthapp-230f2d017943.json"
+
+# Initialize Gemini
 genai.configure()
+model = genai.GenerativeModel("gemini-pro")
 
-# --- Streamlit UI ---
-st.set_page_config(page_title="AI Business Growth Strategist", layout="centered")
+# App UI
 st.title("🚀 AI Business Growth Strategist & Problem Solver")
-st.caption("Diagnose business challenges and generate tailored strategies & content with AI.")
-st.markdown("---")
+st.markdown("Diagnose business challenges and generate tailored strategies & content with AI.")
 
-# Step 1: Business Inputs
 st.subheader("📝 Step 1: Business Information")
-col1, col2 = st.columns(2)
-business_name = col1.text_input("Business Name", placeholder="e.g., EcoFashion Co.")
-industry = col2.text_input("Industry", placeholder="e.g., Fashion, Tech")
-target_audience = col1.text_input("Target Audience", placeholder="e.g., Gen Z women")
-business_goal = col2.text_input("Business Goal", placeholder="e.g., Improve sales conversion")
+business_name = st.text_input("Business Name", placeholder="e.g., EcoFashion Co.")
+target_audience = st.text_input("Target Audience", placeholder="e.g., Gen Z women")
+industry = st.text_input("Industry", placeholder="e.g., Fashion, Tech")
+business_goal = st.text_input("Business Goal", placeholder="e.g., Improve sales conversion")
 problem_description = st.text_area("Describe the Current Problem", placeholder="e.g., Sales dropped 30% despite marketing efforts.")
 
-# Diagnose Button
 if st.button("🧠 Diagnose Problem"):
-    st.info("📨 Diagnose Button Clicked")
-    if not problem_description:
-        st.warning("Please describe the current problem.")
+    if not all([business_name, target_audience, industry, business_goal, problem_description]):
+        st.warning("Please fill out all fields before proceeding.")
     else:
-        try:
-            st.write("🔍 Sending to Gemini...")
+        with st.spinner("🔍 Sending to Gemini..."):
+            try:
+                prompt = f"""
+                I am a business analyst. Here is the company info:
 
-            prompt = (
-                f"Business Name: {business_name}\n"
-                f"Industry: {industry}\n"
-                f"Target Audience: {target_audience}\n"
-                f"Business Goal: {business_goal}\n"
-                f"Current Problem: {problem_description}\n\n"
-                "What are the likely reasons for this problem and suggest a growth strategy?"
-            )
+                Business Name: {business_name}
+                Target Audience: {target_audience}
+                Industry: {industry}
+                Business Goal: {business_goal}
+                Current Problem: {problem_description}
 
-            model = genai.GenerativeModel("gemini-pro")
-            response = model.generate_content(prompt)
+                Based on the above, generate:
+                1. Root cause analysis of the business problem
+                2. 3 tailored growth strategies
+                3. 2 AI tools that could be used to help
+                4. Suggested campaign ideas with channels (email, Instagram, etc)
+                5. A motivational business insight quote
+                """
 
-            st.success("✅ Diagnosis & Strategy:")
-            st.markdown(response.text)
+                response = model.generate_content(prompt)
+                st.success("✅ Diagnosis Complete!")
+                st.markdown(response.text)
 
-        except Exception as e:
-            st.error(f"❌ Gemini API Error:\n\n{e}")
+            except Exception as e:
+                st.error(f"❌ Gemini API Error:\n\n{e}")
