@@ -4,7 +4,7 @@ import os
 
 # Config
 st.set_page_config(page_title="AI Business Growth Strategist", layout="centered")
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 st.title("🚀 AI Business Growth Strategist & Problem Solver")
 st.caption("Diagnose business challenges and generate tailored strategies & content with AI.")
