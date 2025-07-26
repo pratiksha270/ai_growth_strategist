@@ -1,15 +1,14 @@
 import streamlit as st
 import google.generativeai as genai
-import os
 
-# Load API key from secrets
+# Load API key from Streamlit secrets
 GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 
 # Configure Gemini with API key
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# Set up Gemini model
-model = genai.GenerativeModel("gemini-pro")
+# Set up the correct Gemini model
+model = genai.GenerativeModel(model_name="models/gemini-1.5-pro-latest")
 
 # Streamlit app UI
 st.set_page_config(page_title="AI Business Growth Strategist", layout="centered")
@@ -30,22 +29,24 @@ with st.form("business_form"):
 
 if submitted:
     if not all([business_name, industry, target_audience, business_goal, problem]):
-        st.warning("Please fill in all the fields before submitting.")
+        st.warning("⚠️ Please fill in all the fields before submitting.")
     else:
         with st.spinner("🔍 Sending to Gemini..."):
             prompt = f"""
-            Business Name: {business_name}
-            Industry: {industry}
-            Target Audience: {target_audience}
-            Business Goal: {business_goal}
-            Problem: {problem}
+You are an expert AI Business Strategist.
 
-            As a business growth strategist, analyze the above context and generate:
-            1. Root cause of the issue
-            2. Strategic solutions
-            3. Marketing ideas
-            4. Growth roadmap
-            """
+Business Name: {business_name}
+Industry: {industry}
+Target Audience: {target_audience}
+Business Goal: {business_goal}
+Problem Description: {problem}
+
+Please generate the following:
+1. Root cause of the problem
+2. Strategic solutions
+3. Creative marketing ideas
+4. Growth roadmap for 1-3 months
+"""
 
             try:
                 response = model.generate_content(prompt)
