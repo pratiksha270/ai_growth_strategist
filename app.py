@@ -2,57 +2,70 @@ import streamlit as st
 import openai
 import os
 
+# --- Configuration ---
 st.set_page_config(page_title="AI Business Growth Strategist", layout="centered")
 
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Set and test OpenAI API key
+openai.api_key = os.getenv("OPENAI_API_KEY")
+st.write("✅ API Key Loaded:", bool(openai.api_key))  # ✅ Debug print
 
+# --- Title ---
 st.title("🚀 AI Business Growth Strategist & Problem Solver")
 st.caption("Diagnose business challenges and generate tailored strategies & content with AI.")
 st.markdown("---")
 
 # --- Step 1: Business Information ---
-st.subheader("📝 Step 1: Business Information")
+st.subheader("📝 Step 1: Enter Business Information")
 
 col1, col2 = st.columns(2)
-business_name = col1.text_input("Business Name", placeholder="e.g., EcoFashion Co.")
-industry = col2.text_input("Industry", placeholder="e.g., Fashion, Tech")
-target_audience = col1.text_input("Target Audience", placeholder="e.g., Gen Z women")
-business_goal = col2.text_input("Business Goal", placeholder="e.g., Improve sales conversion")
+with col1:
+    name = st.text_input("Business Name", placeholder="e.g., EcoFashion Co.")
+    audience = st.text_input("Target Audience", placeholder="e.g., Gen Z women")
+with col2:
+    industry = st.text_input("Industry", placeholder="e.g., Fashion, Tech")
+    goal = st.text_input("Business Goal", placeholder="e.g., Improve sales conversion")
 
-problem_description = st.text_area("Describe the Current Problem", placeholder="e.g., Sales dropped 30% despite marketing efforts.")
+problem = st.text_area("Describe the Current Problem", placeholder="e.g., Sales dropped 30% despite marketing efforts.")
+st.markdown("")
 
-# Button to trigger AI diagnosis
-if st.button("🔍 Diagnose Problem"):
-    if all([business_name, industry, target_audience, business_goal, problem_description]):
-        with st.spinner("Analyzing problem with AI..."):
-            prompt = f"""
-You are a senior business analyst. A client has provided the following context about their company.
+# --- Diagnose Function ---
+def diagnose_problem(name, industry, audience, goal, problem):
+    prompt = f"""
+You are an expert business strategist. A business needs help.
 
-Business Name: {business_name}
+Business Name: {name}
 Industry: {industry}
-Target Audience: {target_audience}
-Business Goal: {business_goal}
-Current Problem: {problem_description}
+Target Audience: {audience}
+Business Goal: {goal}
+Current Problem: {problem}
 
-Analyze the business problem and categorize causes under:
-- 📦 Product Issues
-- 📣 Marketing Issues
-- 🌐 External Factors
+Diagnose the problem and categorize it as:
+- Product-related
+- Marketing-related
+- External (e.g., economic, seasonal)
 
-Return the diagnosis clearly under these 3 headings.
+Explain clearly and suggest 2-3 focus areas.
 """
-            try:
-                response = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
-                    messages=[{"role": "user", "content": prompt}],
-                    temperature=0.7,
-                    max_tokens=500
-                )
-                diagnosis = response.choices[0].message.content
-                st.markdown("---")
-                st.subheader("🧠 AI Diagnosis")
-                st.markdown(diagnosis)
-            except Exception as e:
-                st.error("❌ Error fetching response. Check your API key or try again.")
-    else:
-        st.warning("⚠️ Please fill all fields before diagnosing.")
+
+    try:
+        st.write("🔍 Sending to OpenAI...")  # ✅ Debug print
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        st.error(f"❌ OpenAI API Error: {e}")
+        return None
+
+# --- Diagnose Button ---
+if st.button("Diagnose Problem"):
+    st.write("📨 Diagnose Button Clicked")  # ✅ Debug print
+    with st.spinner("Analyzing business problem..."):
+        diagnosis = diagnose_problem(name, industry, audience, goal, problem)
+        if diagnosis:
+            st.success("✅ Diagnosis Complete")
+            st.markdown(diagnosis)
+        else:
+            st.error("❌ Failed to fetch diagnosis.")
