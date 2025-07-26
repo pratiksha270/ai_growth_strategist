@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "geminigrowthapp",
+  "private_key_id": "230f2d01794361ee1fe6a9da436aee2b60f4d012",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC8/FAgyTRpzOvk\nhBYwmB1HpHhXdJrAt7gv/VwUvDo/H/2Et+V3wqCOsiltpoAZWDs0gvqTAZUHkLED\ndRIyAZCZC0o+/Q3DJm8LxzlKXRYg8a5A4BgpvUDSKySz0BBWlpQTlRn6C+byLCQF\nnGm+B5A5oXTNFDWNijqMP0A9k50fRkEihV1nPmWd6fWfLO9d07DxeSMn3ASQpAJR\nIKKJk4j/kSkGHDLDs4ULwzfSM9iQ4V8a7snSguUe1zTPYFbZgZfwA7/xsFKji91/\nyEMtzqIJpGYVcWcAMu4eJMXCAny4Mx35BTvF98N0aRq393CYSB+uND2TVGRHqcmX\niTYP4jPNAgMBAAECggEAIlI4QxwHVseOd5u9Y+ncN2yZJljY2fMDkkOS+3kLovcu\nVXIITG2eNwwIFg/M581sQyceVqBM7mjKnPQf79D077ZrL3FJlI1gUWVG9EhfgnAh\n00pfWQUzxndrXPSGYxNJpRzI8O5EbOqzSAmV8prxCGZYDf6Dk0btRxcdlZE/UbRi\nTVbbtA7A/Ib7zw/V3lgWdgV4vRHLfXuGQ201qqaDC8CiXRm1zouv8EwLmXU3tNdE\nwlC6ZVEIYUdLNWp8oKsSpQgT1Y6LQ3hfAIJUzoIgLXbOfjjNDUjc90e0ZTFe04pu\n0IUQepVWY30vviC4PpX1QfKBCp50WrD/fXVSafScQQKBgQDylXLwq6qZ6DVLOzov\n79h1mZCHfGY7JcO7GmAOL8AXdOjs+uVI+KCYY7llxdPLY6Y/CBmZ7xcaAgh7IHo7\nh44xpSDt84QA4HJYtxkX63FjRH/MJ9NfOlM4TOd6TVDq3iWLysEmoKkY5EDN4BoD\nHgy5Dq0hcD7UOqZb4eFeL595VQKBgQDHcAKHV1Xp1nxvEVF/EiOQu1MasLJjF99h\nWS2QRGYvM8SJsmx+gDvH9l/b0vi9gZF4kgxHHfsXw41e22LQnbY+J41/O/BVrSsa\nVqhuDFBIMylrk2F6BuA4lsN5jUMOXoV0WUlaMnmIxraew6L1TNf9XDWy2Q+l9yGU\ni4YIrIfwmQKBgQCHsUdJDo1wZ+6ftXKX6+7F4W9yCgjZXwd8eoVuihFGTbQZE0L8\nLW8PrwC+yAjvxT7yFSLU82OVvbtmvEUDVZEZfgfMcqHNJ79uloTn12BmqaNe3Iwk\nwWhZntMAm4z+w+J2rqSaadYMwWjqgEespLtzLJ11jebnKiNyVAiPec4XvQKBgE7i\nTP2/W6oMPleoH/YE9LBQh8Rs04JCdQaKQW1owIo3DavxONyoV/z1xGCsh9pdH27z\nRYvzndd+b7JvUBx35ReciWkkCiG5Ru06DZDJqg+EvQNh3hJoGdQIPfUcHMPYOy0U\nC+FzSYMCJkWR2CjyZhQ+nrbJCFl68HtS3Icdxv8xAoGBAI0DZJUz/8vGmCcVd7kj\nUi7Q6wi8+uQ+qdJkezQosT9/jsXSLlYNRmI2qWQb+FqxOYZQQ9dR7x9oc8i200F1\nh3aE9YWpvuxl7zBUMiPFQxpo+iu35CXpLXjIp7nEOUKF2TrFBlcCJ79JaibyJkew\ndd7ETP3uYpB1kNk7bPUNU4sg\n-----END PRIVATE KEY-----\n",
+  "client_email": "geminigrowthapp@geminigrowthapp.iam.gserviceaccount.com",
+  "client_id": "114436429028614983190",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/geminigrowthapp%40geminigrowthapp.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
