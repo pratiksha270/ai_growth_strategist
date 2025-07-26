@@ -2,8 +2,8 @@ import streamlit as st
 import openai
 import os
 
-# Config
 st.set_page_config(page_title="AI Business Growth Strategist", layout="centered")
+
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 st.title("🚀 AI Business Growth Strategist & Problem Solver")
