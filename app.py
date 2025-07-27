@@ -1,57 +1,32 @@
 import streamlit as st
 import google.generativeai as genai
+import os
 
-# Load API key from Streamlit secrets
-GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
+# Load Gemini API key from Streamlit Secrets
+GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
 
-# Configure Gemini with API key
+# Configure Gemini
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# Set up the correct Gemini model
-model = genai.GenerativeModel(model_name="models/gemini-1.5-pro-latest")
+# Initialize the model
+model = genai.GenerativeModel('gemini-pro')
 
-# Streamlit app UI
-st.set_page_config(page_title="AI Business Growth Strategist", layout="centered")
+# Streamlit App UI
+st.set_page_config(page_title="Gemini AI Assistant", page_icon="🤖")
+st.title("🤖 Gemini-Powered AI Assistant")
+st.markdown("Ask anything and get a smart response powered by Google's Gemini AI!")
 
-st.title("🚀 AI Business Growth Strategist & Problem Solver")
-st.caption("Diagnose business challenges and generate tailored strategies & content with AI.")
+# Prompt input
+user_prompt = st.text_area("Enter your prompt:", placeholder="e.g. Give me 5 ideas for a YouTube video")
 
-with st.form("business_form"):
-    st.subheader("📝 Step 1: Business Information")
-
-    business_name = st.text_input("Business Name", placeholder="e.g., EcoFashion Co.")
-    industry = st.text_input("Industry", placeholder="e.g., Fashion, Tech")
-    target_audience = st.text_input("Target Audience", placeholder="e.g., Gen Z women")
-    business_goal = st.text_input("Business Goal", placeholder="e.g., Improve sales conversion")
-    problem = st.text_area("Describe the Current Problem", placeholder="e.g., Sales dropped 30% despite marketing efforts.")
-
-    submitted = st.form_submit_button("🧠 Diagnose Problem")
-
-if submitted:
-    if not all([business_name, industry, target_audience, business_goal, problem]):
-        st.warning("⚠️ Please fill in all the fields before submitting.")
+if st.button("Ask Gemini"):
+    if user_prompt.strip() == "":
+        st.warning("Please enter a prompt.")
     else:
-        with st.spinner("🔍 Sending to Gemini..."):
-            prompt = f"""
-You are an expert AI Business Strategist.
-
-Business Name: {business_name}
-Industry: {industry}
-Target Audience: {target_audience}
-Business Goal: {business_goal}
-Problem Description: {problem}
-
-Please generate the following:
-1. Root cause of the problem
-2. Strategic solutions
-3. Creative marketing ideas
-4. Growth roadmap for 1-3 months
-"""
-
+        with st.spinner("Sending prompt to Gemini..."):
             try:
-                response = model.generate_content(prompt)
-                st.success("✅ Strategy Generated!")
-                st.markdown(response.text)
-
+                response = model.generate_content(user_prompt)
+                st.subheader("📌 Gemini's Response")
+                st.write(response.text)
             except Exception as e:
                 st.error(f"❌ Gemini API Error:\n\n{str(e)}")
