@@ -1,31 +1,31 @@
 import streamlit as st
-import google.generativeai as genai
+import openai
+import os
 
-# ✅ Load your Gemini API key from Streamlit secrets
-GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
+# App title
+st.set_page_config(page_title="AI Assistant (OpenAI)", layout="centered")
+st.title("🤖 OpenAI-Powered AI Assistant")
+st.markdown("Ask anything and get a smart response powered by OpenAI GPT!")
 
-# ✅ Configure Gemini API
-genai.configure(api_key=GOOGLE_API_KEY)
+# API key from secrets
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-# ✅ Create the model using the correct name
-model = genai.GenerativeModel(model_name="models/gemini-1.5-pro")  # <-- This is the correct model name
+# User input
+user_prompt = st.text_area("Enter your prompt:", height=150)
 
-# ✅ Streamlit UI
-st.set_page_config(page_title="Gemini AI Assistant", page_icon="🤖")
-st.title("🤖 Gemini-Powered AI Assistant")
-st.markdown("Ask anything and get a smart response powered by Google's Gemini AI!")
-
-# ✅ Text input
-user_prompt = st.text_area("Enter your prompt:", placeholder="e.g. Give me 5 YouTube video ideas")
-
-if st.button("Ask Gemini"):
+if st.button("Generate Response"):
     if not user_prompt.strip():
         st.warning("Please enter a prompt.")
     else:
-        with st.spinner("Thinking..."):
+        with st.spinner("💬 Thinking..."):
             try:
-                response = model.generate_content(user_prompt)
-                st.subheader("📌 Gemini's Response")
-                st.write(response.text)
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[{"role": "user", "content": user_prompt}]
+                )
+                reply = response.choices[0].message.content.strip()
+                st.success("✅ Response:")
+                st.write(reply)
+
             except Exception as e:
-                st.error(f"❌ Gemini API Error:\n\n{str(e)}")
+                st.error(f"❌ OpenAI API Error:\n\n{str(e)}")
