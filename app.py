@@ -1,50 +1,42 @@
 import streamlit as st
 import requests
-import json
+import os
 
-st.set_page_config(page_title="🤗 Hugging Face AI Assistant")
+st.set_page_config(page_title="Hugging Face AI Assistant", layout="centered")
 st.title("🤗 Hugging Face AI Assistant")
-st.markdown("""
-Ask anything and get a smart response using open-source models from Hugging Face!
-""")
+st.write("Ask anything and get a smart response using open-source models from Hugging Face!")
 
-# Input section
+# Choose from working models
 model_name = st.selectbox("Choose a model:", [
-    "HuggingFaceH4/zephyr-7b-beta",
-    "mistralai/Mistral-7B-Instruct-v0.1"
+    "google/flan-t5-large",
+    "tiiuae/falcon-7b-instruct",
+    "facebook/opt-1.3b",
+    "bigcode/starcoder"
 ])
 
-prompt = st.text_input("Enter your prompt:", placeholder="e.g. Tell me about AI")
+prompt = st.text_input("Enter your prompt:")
 
-# Load Hugging Face API key from secrets
-api_key = st.secrets["HUGGINGFACE_API_KEY"]
+if st.button("Ask AI") and prompt:
+    API_URL = f"https://api-inference.huggingface.co/models/{model_name}"
+    headers = {"Authorization": f"Bearer {st.secrets['HUGGINGFACE_API_KEY']}"}
 
-# Send query to Hugging Face Inference API
-def query_huggingface(prompt_text):
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
     payload = {
-        "inputs": prompt_text,
-        "parameters": {"max_new_tokens": 300, "temperature": 0.7}
+        "inputs": prompt,
+        "parameters": {
+            "max_new_tokens": 100,
+            "temperature": 0.7
+        }
     }
-    url = f"https://api-inference.huggingface.co/models/{model_name}"
-    response = requests.post(url, headers=headers, data=json.dumps(payload))
+
+    with st.spinner("Thinking..."):
+        response = requests.post(API_URL, headers=headers, json=payload)
 
     if response.status_code == 200:
-        output = response.json()
         try:
-            return output[0]["generated_text"]
-        except:
-            return json.dumps(output)
+            generated_text = response.json()[0]["generated_text"]
+            st.success(generated_text)
+        except Exception as e:
+            st.error(f"Unexpected format: {e}")
+            st.json(response.json())
     else:
-        return f"❌ Hugging Face API Error {response.status_code}: {response.reason}\n{response.text}"
-
-# Run on button click
-if st.button("Ask AI") and prompt:
-    with st.spinner("Thinking..."):
-        result = query_huggingface(prompt)
-        st.markdown("---")
-        st.subheader("🧠 AI Response:")
-        st.write(result)
+        st.error(f"Hugging Face API Error {response.status_code}: {response.text}")
