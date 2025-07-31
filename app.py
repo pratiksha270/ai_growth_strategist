@@ -1,31 +1,26 @@
 import streamlit as st
-import openai
-import os
+from openai import OpenAI
 
-# App title
-st.set_page_config(page_title="AI Assistant (OpenAI)", layout="centered")
-st.title("🤖 OpenAI-Powered AI Assistant")
-st.markdown("Ask anything and get a smart response powered by OpenAI GPT!")
+st.set_page_config(page_title="🤖 AI Assistant", layout="centered")
+st.title("🤖 Gemini-Powered AI Assistant")
+st.write("Ask anything and get a smart response powered by AI!")
 
-# API key from secrets
-openai.api_key = st.secrets["GOOGLE_API_KEY"]
+# Set API key
+client = OpenAI(api_key=st.secrets["GOOGLE_API_KEY"])  # make sure your secret key is set
 
-# User input
-user_prompt = st.text_area("Enter your prompt:", height=150)
+# Input prompt
+prompt = st.text_input("Enter your prompt:", placeholder="e.g., give me 5 YouTube ideas")
 
-if st.button("Generate Response"):
-    if not user_prompt.strip():
-        st.warning("Please enter a prompt.")
-    else:
-        with st.spinner("💬 Thinking..."):
-            try:
-                response = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
-                    messages=[{"role": "user", "content": user_prompt}]
-                )
-                reply = response.choices[0].message.content.strip()
-                st.success("✅ Response:")
-                st.write(reply)
-
-            except Exception as e:
-                st.error(f"❌ OpenAI API Error:\n\n{str(e)}")
+if st.button("💡 Get Response") and prompt.strip():
+    with st.spinner("Thinking..."):
+        try:
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
+            )
+            st.success("AI Response:")
+            st.write(response.choices[0].message.content)
+        except Exception as e:
+            st.error(f"❌ Error: {e}")
