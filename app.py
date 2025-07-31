@@ -1,40 +1,41 @@
 import streamlit as st
 import requests
-import json
 
-# Hugging Face API details
-API_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta"
-headers = {
-    "Authorization": f"Bearer {st.secrets['HUGGINGFACE_API_KEY']}"
+# Hugging Face API token from secrets
+api_token = st.secrets["HUGGINGFACE_API_KEY"]
+
+# Model options
+MODEL_OPTIONS = {
+    "Mistral-7B Instruct": "mistralai/Mistral-7B-Instruct-v0.1",
+    "Falcon-7B Instruct": "tiiuae/falcon-7b-instruct"
 }
 
-# Streamlit UI
-st.set_page_config(page_title="🤖 Hugging Face Assistant")
-st.title("🤖 Gemini-like Assistant (via Hugging Face)")
+# Title and description
+st.title("🤖 Hugging Face AI Assistant")
+st.markdown("Ask anything and get a smart response using open-source models from Hugging Face!")
 
-st.markdown("Ask anything and get a smart response powered by Hugging Face Zephyr model!")
+# Model selection dropdown
+model_label = st.selectbox("Choose a model:", list(MODEL_OPTIONS.keys()))
+model_name = MODEL_OPTIONS[model_label]
+API_URL = f"https://api-inference.huggingface.co/models/{model_name}"
 
-user_input = st.text_area("Enter your prompt:", placeholder="e.g. Give me 5 YouTube video ideas")
+# Prompt input
+prompt = st.text_input("Enter your prompt:", placeholder="e.g. Give me 5 YouTube content ideas")
 
-if st.button("Ask AI"):
-    if not user_input.strip():
-        st.warning("Please enter a prompt.")
+# Button to trigger inference
+if st.button("Ask AI") and prompt:
+    headers = {"Authorization": f"Bearer {api_token}"}
+    payload = {"inputs": prompt}
+
+    with st.spinner("Generating response..."):
+        response = requests.post(API_URL, headers=headers, json=payload)
+
+    # Handle error
+    if response.status_code == 200:
+        output = response.json()
+        if isinstance(output, list):
+            st.success(output[0]['generated_text'])
+        else:
+            st.warning("Unexpected response format. Try another prompt.")
     else:
-        with st.spinner("💬 Generating response..."):
-            payload = {
-                "inputs": user_input,
-                "parameters": {
-                    "max_new_tokens": 300,
-                    "return_full_text": False
-                }
-            }
-            response = requests.post(API_URL, headers=headers, json=payload)
-
-            if response.status_code == 200:
-                output = response.json()
-                try:
-                    st.success(output[0]["generated_text"])
-                except Exception:
-                    st.error("❌ Could not parse response. Try again.")
-            else:
-                st.error(f"❌ Hugging Face API Error {response.status_code}: {response.text}")
+        st.error(f"Hugging Face API Error {response.status_code}: {response.text}")
