@@ -8,7 +8,7 @@ st.title("🤖 OpenAI-Powered AI Assistant")
 st.markdown("Ask anything and get a smart response powered by OpenAI GPT!")
 
 # API key from secrets
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+openai.api_key = st.secrets["GOOGLE_API_KEY"]
 
 # User input
 user_prompt = st.text_area("Enter your prompt:", height=150)
